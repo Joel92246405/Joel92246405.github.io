@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Joel Nascimento, desenvolvedor GeneXus (RH e Fiscal) e Flutter em Franca e região, SP. Apps, sistemas, vídeos e redes sociais.">
+<title>Joel Nascimento Dev</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: coluna única de leitura, faixas de seção com rótulos em mono, grade de apps 2-3 colunas */
+:root{
+  --bg:#F5F7F7; --surface:#FFFFFF; --fg:#13212B; --muted:#5A6B74; --line:#DCE3E5;
+  --accent:#0D6B66; --accent-soft:#E1F0EE; --couro:#A85A26;
+  --display:"Sora",system-ui,sans-serif; --body:"IBM Plex Sans",system-ui,sans-serif; --mono:"IBM Plex Mono",ui-monospace,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0F171C; --surface:#16222A; --fg:#E6EDEF; --muted:#94A6AE; --line:#26363F;
+  --accent:#4FC2B8; --accent-soft:#16312F; --couro:#E0965F; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0F171C; --surface:#16222A; --fg:#E6EDEF; --muted:#94A6AE; --line:#26363F;
+  --accent:#4FC2B8; --accent-soft:#16312F; --couro:#E0965F; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:16px;line-height:1.6}
+.wrap{max-width:960px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+h1,h2,h3{font-family:var(--display);text-wrap:balance;line-height:1.15;margin:0}
+a{color:var(--accent)}
+a:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:4px}
+.label{font-family:var(--mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--couro)}
+
+header{padding-block:64px 40px;border-bottom:1px solid var(--line)}
+header .wrap{display:grid;gap:20px}
+h1{font-size:clamp(34px,6vw,56px);font-weight:700;letter-spacing:-.02em}
+h1 span{color:var(--accent)}
+.lead{font-size:19px;color:var(--muted);max-width:62ch;margin:0}
+.stack{display:flex;flex-wrap:wrap;gap:8px;margin-top:4px}
+.chip{font-family:var(--mono);font-size:13px;padding:4px 10px;border:1px solid var(--line);border-radius:999px;background:var(--surface)}
+.chip.on{background:var(--accent-soft);border-color:transparent;color:var(--accent)}
+.meta{display:flex;flex-wrap:wrap;gap:24px;font-size:14px;color:var(--muted)}
+.meta b{display:block;font-family:var(--display);font-size:28px;color:var(--fg);font-variant-numeric:tabular-nums}
+
+section{padding-block:56px;border-bottom:1px solid var(--line)}
+section .wrap{display:grid;gap:28px}
+h2{font-size:28px;font-weight:600}
+.grid{display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(260px,1fr))}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:22px;display:grid;gap:10px;align-content:start;min-width:0}
+.card h3{font-size:18px;font-weight:600}
+.card p{margin:0;color:var(--muted);font-size:15px}
+.card ul{margin:0;padding-left:18px;color:var(--muted);font-size:15px}
+.code{font-family:var(--mono);font-size:13px;color:var(--accent)}
+
+.apps{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(280px,1fr))}
+.app{display:flex;gap:14px;align-items:flex-start;padding:18px;border:1px solid var(--line);border-radius:10px;background:var(--surface);text-decoration:none;color:var(--fg);min-width:0;transition:border-color .15s}
+.app:hover{border-color:var(--accent)}
+.ico{flex:none;width:44px;height:44px;border-radius:12px;background:var(--accent-soft);color:var(--accent);display:grid;place-items:center;font-family:var(--display);font-weight:700}
+.app h3{font-size:16px;font-weight:600}
+.app p{margin:2px 0 6px;color:var(--muted);font-size:14px}
+.app small{font-family:var(--mono);font-size:12px;color:var(--accent)}
+
+.timeline{display:grid;gap:0;border-left:2px solid var(--line);margin-left:6px}
+.step{position:relative;padding:0 0 26px 24px}
+.step::before{content:"";position:absolute;left:-7px;top:7px;width:12px;height:12px;border-radius:50%;background:var(--bg);border:2px solid var(--accent)}
+.step h3{font-size:17px;font-weight:600}
+.step p{margin:4px 0 0;color:var(--muted);font-size:15px;max-width:64ch}
+.step .label{color:var(--muted)}
+
+.contact{display:grid;gap:14px;max-width:640px}
+.contact p{margin:0;color:var(--muted)}
+.btn{display:inline-block;padding:12px 20px;border-radius:8px;background:var(--accent);color:var(--bg);font-weight:600;text-decoration:none}
+footer{padding-block:28px;font-size:13px;color:var(--muted)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<style>body{margin:0}img{max-width:100%}</style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <span class="label">Desenvolvedor · Franca e região, SP</span>
+    <h1>Joel Nascimento<br><span>GeneXus e Flutter</span></h1>
+    <p class="lead">12 anos desenvolvendo sistemas corporativos, 11 deles em Recursos Humanos e o mais recente na área Fiscal. Hoje também crio aplicativos Flutter publicados na Play Store. Entendo o código e a regra de negócio por trás dele.</p>
+    <div class="stack" aria-label="Tecnologias">
+      <span class="chip on">GeneXus 18</span><span class="chip">GeneXus 15 · 16 · 17</span><span class="chip">GeneXus Evolution</span>
+      <span class="chip on">Flutter</span><span class="chip">SQL Server</span><span class="chip">Oracle</span><span class="chip">PostgreSQL</span>
+    </div>
+    <div class="meta">
+      <div><b>12</b>anos de mercado</div>
+      <div><b>11</b>anos em sistemas de RH</div>
+      <div><b>5</b>apps na Play Store</div>
+    </div>
+  </div>
+</header>
+
+<section>
+  <div class="wrap">
+    <span class="label">O que eu faço</span>
+    <h2>Especialidades</h2>
+    <div class="grid">
+      <div class="card">
+        <span class="code">RH · Folha · Ponto</span>
+        <h3>Sistemas de Recursos Humanos</h3>
+        <p>11 anos de desenvolvimento e manutenção em GeneXus para RH: rotinas de folha, lançamentos e controle de ponto, com regras trabalhistas no dia a dia.</p>
+      </div>
+      <div class="card">
+        <span class="code">EFD ICMS/IPI · EFD-Contribuições</span>
+        <h3>Sistemas Fiscais</h3>
+        <p>Manutenção do fluxo fiscal desde a chegada dos documentos até a geração da EFD e da EFD-Contribuições, o produto final entregue ao fisco.</p>
+      </div>
+      <div class="card">
+        <span class="code">Android · Flutter</span>
+        <h3>Aplicativos mobile</h3>
+        <p>Apps em Flutter publicados na Google Play e apps corporativos em GeneXus, como lançamentos rurais para o RH.</p>
+      </div>
+      <div class="card">
+        <span class="code">Reels · CapCut · Canva</span>
+        <h3>Vídeo e redes sociais</h3>
+        <p>Edito vídeos desde 2020, coordeno a Pascom e o Instagram da paróquia de Restinga e sou autor do curso “CapCut Descomplicado” na Udemy.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="apps">
+  <div class="wrap">
+    <span class="label">Portfólio</span>
+    <h2>Apps publicados na Google Play</h2>
+    <div class="apps">
+      <a class="app" href="https://play.google.com/store/apps/details?id=com.medicamentohoracerta.medicamento_hora_certa" target="_blank" rel="noopener">
+        <span class="ico">Rx</span><div><h3>Remédio na Hora Certa</h3><p>Lembretes para tomar cada medicamento no horário certo.</p><small>Flutter · Ver na Play Store ↗</small></div>
+      </a>
+      <a class="app" href="https://play.google.com/store/apps/details?id=com.academiawainer.academia_wainer" target="_blank" rel="noopener">
+        <span class="ico">AW</span><div><h3>Academia Wainer</h3><p>Aplicativo sob medida para a Academia Wainer.</p><small>Flutter · Ver na Play Store ↗</small></div>
+      </a>
+      <a class="app" href="https://play.google.com/store/apps/details?id=com.joel.irmandade_salvistas" target="_blank" rel="noopener">
+        <span class="ico">IS</span><div><h3>Irmandade Salvista FJS</h3><p>App da comunidade da Irmandade Salvista.</p><small>Flutter · Ver na Play Store ↗</small></div>
+      </a>
+      <a class="app" href="https://play.google.com/store/apps/details?id=com.joelnascimento.igrejas.igrejas" target="_blank" rel="noopener">
+        <span class="ico">IC</span><div><h3>Minha Igreja Católica</h3><p>Informações e conteúdo para fiéis da igreja católica.</p><small>Flutter · Ver na Play Store ↗</small></div>
+      </a>
+      <a class="app" href="https://play.google.com/store/apps/details?id=com.historiasinfantis.historiasinfantis" target="_blank" rel="noopener">
+        <span class="ico">HI</span><div><h3>Historinhas Infantil</h3><p>Histórias para crianças lerem e ouvirem.</p><small>Flutter · Ver na Play Store ↗</small></div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <span class="label">Trajetória</span>
+    <h2>Experiência</h2>
+    <div class="timeline">
+      <div class="step"><span class="label">Atual · 1 ano</span><h3>Desenvolvedor GeneXus 18, área Fiscal</h3><p>Manutenção do processo fiscal a partir da entrada dos documentos até a geração da EFD ICMS/IPI e da EFD-Contribuições.</p></div>
+      <div class="step"><span class="label">11 anos</span><h3>Desenvolvedor GeneXus, área de RH</h3><p>Desenvolvimento e manutenção de sistemas de Recursos Humanos, passando pelas versões Evolution, 15, 16 e 17, com SQL Server, Oracle e PostgreSQL. Desenvolvi um app GeneXus de lançamentos rurais para o RH e participei do desenvolvimento de um app de ponto eletrônico.</p></div>
+      <div class="step"><span class="label">Paralelo</span><h3>Aplicativos Flutter</h3><p>Cinco apps publicados na Google Play, do código à publicação na loja.</p></div>
+      <div class="step"><span class="label">Desde 2020</span><h3>Editor de vídeos e social media</h3><p>Reels, Shorts e YouTube com CapCut, posts e carrosséis no Canva. Coordeno a Pascom da paróquia de Restinga e criei o curso “CapCut Descomplicado” na Udemy.</p></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <span class="label">Serviços</span>
+    <h2>Como posso ajudar seu projeto</h2>
+    <div class="grid">
+      <div class="card"><h3>Empresas que usam GeneXus</h3><ul><li>Correções e melhorias em sistemas legados</li><li>Customizações em RH, folha e ponto</li><li>Ajustes fiscais e de SPED</li><li>Migração entre versões do GeneXus</li></ul></div>
+      <div class="card"><h3>Pequenos negócios de Franca e região</h3><ul><li>Aplicativo próprio para o seu negócio</li><li>Site de uma página com botão de WhatsApp</li><li>Cardápio ou catálogo digital</li><li>Perfil no Google Maps</li></ul></div>
+      <div class="card"><h3>Instagram do seu negócio</h3><ul><li>Básico: 8 posts no Canva com legendas, R$350/mês</li><li>Completo: 8 posts, 4 reels editados e stories, R$600/mês</li><li>Reels avulsos e vídeos para campanhas</li></ul></div>
+    </div>
+  </div>
+</section>
+
+<section style="border-bottom:0">
+  <div class="wrap contact">
+    <span class="label">Contato</span>
+    <h2>Vamos conversar sobre o seu projeto?</h2>
+    <p>Atendo remotamente em todo o Brasil e presencialmente em Franca, Restinga e região.</p>
+    <p style="display:flex;flex-wrap:wrap;gap:12px"><a class="btn" href="https://wa.me/5516992467589" target="_blank" rel="noopener">Chamar no WhatsApp ↗</a><a class="btn" style="background:transparent;color:var(--accent);border:1px solid var(--accent)" href="https://github.com/Joel92246405" target="_blank" rel="noopener">Ver meu GitHub ↗</a></p>
+    <p class="code">WhatsApp: (16) 99246-7589 · github.com/Joel92246405</p>
+  </div>
+</section>
+
+<footer><div class="wrap">Joel Nascimento · Desenvolvedor GeneXus e Flutter · Restinga, SP</div></footer>
+
+</body>
+</html>
