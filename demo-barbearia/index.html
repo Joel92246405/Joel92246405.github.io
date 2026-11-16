@@ -1,0 +1,280 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Agendamento</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Work+Sans:wght@400;500;600&display=swap">
+<script>
+/* =====================================================================
+   CONFIGURAÇÃO DO CLIENTE — é só isto que muda de um negócio para outro
+   ===================================================================== */
+const CONFIG = {
+  nome: "Barbearia Exemplo",
+  slogan: "Corte, barba e acabamento na régua",
+  endereco: "Rua Exemplo, 123 · Centro · Franca-SP",
+  whatsapp: "5516992467589",          // número que recebe os pedidos (só dígitos, com 55 + DDD)
+  intervaloMin: 30,                   // de quanto em quanto tempo aparecem os horários
+  antecedenciaMin: 60,                // não deixa marcar para daqui a menos de 1 hora
+  diasAFrente: 14,                    // quantos dias aparecem para escolher
+  servicos: [
+    { nome: "Corte", preco: 40, min: 30 },
+    { nome: "Barba", preco: 30, min: 30 },
+    { nome: "Corte + barba", preco: 60, min: 60 },
+    { nome: "Pezinho / acabamento", preco: 15, min: 15 },
+    { nome: "Sobrancelha", preco: 15, min: 15 },
+    { nome: "Corte infantil", preco: 35, min: 30 }
+  ],
+  profissionais: ["Rafael", "Diego"],  // deixe só um nome para pular a escolha
+  // 0 = domingo ... 6 = sábado. Lista vazia = fechado.
+  expediente: {
+    0: [],
+    1: [["09:00","12:00"],["13:30","19:00"]],
+    2: [["09:00","12:00"],["13:30","19:00"]],
+    3: [["09:00","12:00"],["13:30","19:00"]],
+    4: [["09:00","12:00"],["13:30","19:00"]],
+    5: [["09:00","12:00"],["13:30","20:00"]],
+    6: [["08:00","14:00"]]
+  },
+  // Planilha do Google publicada como CSV, onde o DONO cadastra folgas e saídas mais cedo.
+  // Colunas: data (dd/mm/aaaa) | inicio (hh:mm, vazio = dia todo) | fim | profissional (vazio = todos) | motivo
+  planilhaCsv: "",
+  // Bloqueios fixos de demonstração (usados também quando não há planilha)
+  bloqueios: [
+    { data: "+2", inicio: "15:00", fim: "",  profissional: "", motivo: "Sai mais cedo" },
+    { data: "+4", inicio: "",      fim: "",  profissional: "Diego", motivo: "Folga" }
+  ]
+};
+</script>
+<style>
+:root{
+  --bg:#14171A; --surface:#1D2226; --raised:#252B30; --fg:#EEE9E1; --muted:#A39C91; --line:#323A40;
+  --brass:#C9A15B; --brass-ink:#1A1408; --ok:#5BC08A; --warn:#E0A458;
+  --display:"Bebas Neue",Impact,"Arial Narrow",sans-serif; --body:"Work Sans",system-ui,sans-serif;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:16px;line-height:1.45;-webkit-tap-highlight-color:transparent}
+.wrap{max-width:560px;margin:0 auto;padding-block:max(20px,env(safe-area-inset-top)) 120px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:grid;gap:18px}
+header{display:grid;gap:4px;padding:18px 0 6px;border-bottom:1px solid var(--line)}
+.pole{height:6px;border-radius:3px;background:repeating-linear-gradient(135deg,var(--brass) 0 10px,var(--fg) 10px 20px,#8B2E2E 20px 30px,var(--fg) 30px 40px);opacity:.85;margin-bottom:10px}
+h1{font-family:var(--display);font-weight:400;font-size:clamp(40px,11vw,56px);letter-spacing:.02em;line-height:.95;margin:0}
+.slogan{color:var(--brass);margin:0;font-weight:500}
+.addr{color:var(--muted);font-size:14px;margin:0}
+section{display:grid;gap:10px}
+h2{font-family:var(--display);font-weight:400;font-size:24px;letter-spacing:.04em;margin:0;display:flex;gap:10px;align-items:baseline}
+h2 small{font-family:var(--body);font-size:13px;color:var(--muted);letter-spacing:0}
+.opts{display:grid;gap:8px}
+.opt{display:flex;justify-content:space-between;align-items:center;gap:12px;width:100%;text-align:left;font:inherit;color:var(--fg);background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px 16px;cursor:pointer}
+.opt .sub{color:var(--muted);font-size:13px}
+.opt .price{font-weight:600;color:var(--brass);white-space:nowrap}
+.opt[aria-pressed="true"]{border-color:var(--brass);background:var(--raised);box-shadow:inset 0 0 0 1px var(--brass)}
+.pros{display:flex;flex-wrap:wrap;gap:8px}
+.pros .opt{width:auto;flex:1 1 120px;justify-content:center}
+.days{display:flex;gap:8px;overflow-x:auto;padding-bottom:6px;scroll-snap-type:x mandatory}
+.day{flex:0 0 68px;scroll-snap-align:start;display:grid;justify-items:center;gap:2px;padding:10px 4px;font:inherit;color:var(--fg);background:var(--surface);border:1px solid var(--line);border-radius:12px;cursor:pointer}
+.day .dw{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+.day .dn{font-family:var(--display);font-size:28px;line-height:1}
+.day .dm{font-size:11px;color:var(--muted)}
+.day[aria-pressed="true"]{border-color:var(--brass);background:var(--raised);box-shadow:inset 0 0 0 1px var(--brass)}
+.day:disabled{opacity:.35;cursor:not-allowed}
+.slots{display:grid;grid-template-columns:repeat(auto-fill,minmax(76px,1fr));gap:8px}
+.slot{font:inherit;font-variant-numeric:tabular-nums;font-weight:500;padding:11px 0;color:var(--fg);background:var(--surface);border:1px solid var(--line);border-radius:10px;cursor:pointer}
+.slot[aria-pressed="true"]{background:var(--brass);color:var(--brass-ink);border-color:var(--brass)}
+.note{font-size:14px;color:var(--muted);margin:0}
+.note.warn{color:var(--warn)}
+input{font:inherit;width:100%;padding:14px 16px;border-radius:12px;border:1px solid var(--line);background:var(--surface);color:var(--fg)}
+.opt:focus-visible,.day:focus-visible,.slot:focus-visible,input:focus-visible,.cta:focus-visible{outline:2px solid var(--brass);outline-offset:2px}
+.bar{position:fixed;left:0;right:0;bottom:0;background:linear-gradient(transparent,var(--bg) 30%);padding:24px max(16px,env(safe-area-inset-right,0px)) max(16px,env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
+.bar-in{max-width:560px;margin:0 auto;display:grid;gap:8px}
+.resumo{font-size:14px;color:var(--muted);text-align:center;min-height:1.4em}
+.cta{display:block;text-align:center;text-decoration:none;font-weight:600;font-size:17px;padding:16px;border-radius:14px;background:#1FA855;color:#fff;border:0}
+.cta[aria-disabled="true"]{background:var(--raised);color:var(--muted);pointer-events:none}
+footer{font-size:12px;color:var(--muted);text-align:center;padding-top:8px}
+@media (prefers-reduced-motion:reduce){*{scroll-behavior:auto}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="pole" aria-hidden="true"></div>
+    <h1 id="nome"></h1>
+    <p class="slogan" id="slogan"></p>
+    <p class="addr" id="endereco"></p>
+  </header>
+
+  <section>
+    <h2>1. Serviço</h2>
+    <div class="opts" id="servicos"></div>
+  </section>
+
+  <section id="secPro">
+    <h2>2. Profissional</h2>
+    <div class="pros" id="profissionais"></div>
+  </section>
+
+  <section>
+    <h2 id="tDia">3. Dia</h2>
+    <div class="days" id="dias"></div>
+  </section>
+
+  <section>
+    <h2 id="tHora">4. Horário <small id="hInfo"></small></h2>
+    <div class="slots" id="horarios"></div>
+    <p class="note" id="hNota">Escolha o serviço e o dia para ver os horários.</p>
+  </section>
+
+  <section>
+    <h2 id="tNome">5. Seu nome</h2>
+    <input id="cliente" type="text" autocomplete="name" placeholder="Como podemos te chamar?">
+  </section>
+
+  <footer>O horário é confirmado pela barbearia no WhatsApp.</footer>
+</div>
+
+<div class="bar"><div class="bar-in">
+  <div class="resumo" id="resumo"></div>
+  <a class="cta" id="cta" aria-disabled="true" target="_blank" rel="noopener">Agendar pelo WhatsApp</a>
+</div></div>
+
+<script>
+const S = { servico:null, pro:null, dia:null, hora:null };
+let bloqueios = [];
+const $ = id => document.getElementById(id);
+const DW = ["Dom","Seg","Ter","Qua","Qui","Sex","Sáb"];
+const DWL = ["domingo","segunda","terça","quarta","quinta","sexta","sábado"];
+const toMin = h => { const [a,b] = h.split(":").map(Number); return a*60+b; };
+const toHH = m => String(Math.floor(m/60)).padStart(2,"0")+":"+String(m%60).padStart(2,"0");
+const brl = v => "R$ " + v.toFixed(2).replace(".",",").replace(",00","");
+const ymd = d => d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
+const ddmm = d => String(d.getDate()).padStart(2,"0")+"/"+String(d.getMonth()+1).padStart(2,"0");
+
+function hoje(){ const d=new Date(); d.setHours(0,0,0,0); return d; }
+function dataBloqueio(s){
+  s=String(s||"").trim();
+  if(/^\+\d+$/.test(s)){ const d=hoje(); d.setDate(d.getDate()+Number(s.slice(1))); return ymd(d); }
+  const m=s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/); if(m) return m[3]+"-"+m[2].padStart(2,"0")+"-"+m[1].padStart(2,"0");
+  return s;
+}
+function normaliza(b){ return { data:dataBloqueio(b.data), inicio:(b.inicio||"").trim(), fim:(b.fim||"").trim(), profissional:(b.profissional||"").trim(), motivo:(b.motivo||"").trim() }; }
+
+function parseCsv(txt){
+  const linhas = txt.replace(/\r/g,"").split("\n").filter(l=>l.trim());
+  return linhas.slice(1).map(l=>{
+    const c=[]; let cur="", q=false;
+    for(const ch of l){ if(ch==='"'){q=!q;continue;} if(ch===","&&!q){c.push(cur);cur="";continue;} cur+=ch; }
+    c.push(cur);
+    return { data:c[0], inicio:c[1], fim:c[2], profissional:c[3], motivo:c[4] };
+  }).filter(b=>b.data);
+}
+
+function prosAtendendo(){ return S.pro && S.pro!=="Qualquer um" ? [S.pro] : CONFIG.profissionais; }
+
+function livres(dia){
+  if(!S.servico) return [];
+  const turnos = CONFIG.expediente[dia.getDay()]||[];
+  const dur = S.servico.min, data = ymd(dia);
+  const agora = new Date(), limite = agora.getTime()+CONFIG.antecedenciaMin*60000;
+  const res = [];
+  for(const [ini,fim] of turnos){
+    for(let t=toMin(ini); t+dur<=toMin(fim); t+=CONFIG.intervaloMin){
+      const quando = new Date(dia); quando.setMinutes(t);
+      if(quando.getTime()<limite) continue;
+      const algumLivre = prosAtendendo().some(p => !bloqueios.some(b=>{
+        if(b.data!==data) return false;
+        if(b.profissional && b.profissional!==p) return false;
+        const bi = b.inicio?toMin(b.inicio):0, bf = b.fim?toMin(b.fim):24*60;
+        return t < bf && t+dur > bi;
+      }));
+      if(algumLivre) res.push(t);
+    }
+  }
+  return res;
+}
+
+function motivoDia(dia){
+  const data=ymd(dia);
+  const b = bloqueios.find(b=>b.data===data && (!b.profissional || prosAtendendo().includes(b.profissional)));
+  return b ? b.motivo : "";
+}
+
+function btn(cls, html, pressed, onclick){
+  const b=document.createElement("button"); b.type="button"; b.className=cls; b.innerHTML=html;
+  b.setAttribute("aria-pressed", String(!!pressed)); b.onclick=onclick; return b;
+}
+const esc = s => String(s).replace(/[&<>"]/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+
+function render(){
+  const servs=$("servicos"); servs.replaceChildren();
+  for(const s of CONFIG.servicos){
+    servs.append(btn("opt", `<span><b>${esc(s.nome)}</b><br><span class="sub">${s.min} min</span></span><span class="price">${brl(s.preco)}</span>`,
+      S.servico===s, ()=>{ S.servico=s; S.hora=null; render(); }));
+  }
+
+  const umPro = CONFIG.profissionais.length<=1;
+  $("secPro").hidden = umPro;
+  if(umPro) S.pro = CONFIG.profissionais[0]||null;
+  const n = umPro ? 2 : 3;
+  $("tDia").textContent = n+". Dia"; $("tHora").firstChild.textContent = (n+1)+". Horário "; $("tNome").textContent=(n+2)+". Seu nome";
+  const pros=$("profissionais"); pros.replaceChildren();
+  if(!umPro) for(const p of ["Qualquer um",...CONFIG.profissionais]){
+    pros.append(btn("opt", esc(p), S.pro===p, ()=>{ S.pro=p; S.hora=null; render(); }));
+  }
+
+  const dias=$("dias"); dias.replaceChildren();
+  for(let i=0;i<CONFIG.diasAFrente;i++){
+    const d=hoje(); d.setDate(d.getDate()+i);
+    const fechado = !(CONFIG.expediente[d.getDay()]||[]).length;
+    const semVaga = !fechado && S.servico && !livres(d).length;
+    const b = btn("day", `<span class="dw">${i===0?"Hoje":DW[d.getDay()]}</span><span class="dn">${d.getDate()}</span><span class="dm">${fechado?"fechado":semVaga?"lotado":ddmm(d)}</span>`,
+      S.dia && ymd(S.dia)===ymd(d), ()=>{ S.dia=d; S.hora=null; render(); });
+    b.disabled = fechado; dias.append(b);
+  }
+
+  const hs=$("horarios"); hs.replaceChildren(); const nota=$("hNota"); nota.className="note";
+  $("hInfo").textContent = S.dia ? DWL[S.dia.getDay()]+", "+ddmm(S.dia) : "";
+  if(S.servico && S.dia){
+    const l = livres(S.dia);
+    for(const t of l) hs.append(btn("slot", toHH(t), S.hora===t, ()=>{ S.hora=t; render(); }));
+    const mot = motivoDia(S.dia);
+    if(!l.length){ nota.textContent = mot ? "Sem horários neste dia ("+mot.toLowerCase()+"). Escolha outro dia." : "Sem horários livres neste dia. Escolha outro dia."; nota.classList.add("warn"); }
+    else nota.textContent = mot ? "Atenção: "+mot.toLowerCase()+" neste dia, por isso alguns horários não aparecem." : "";
+  } else nota.textContent = "Escolha o serviço e o dia para ver os horários.";
+
+  atualizaCta();
+}
+
+function atualizaCta(){
+  const nome = $("cliente").value.trim();
+  const ok = S.servico && S.dia && S.hora!=null && nome;
+  const cta=$("cta");
+  $("resumo").textContent = S.servico ? [S.servico.nome+" · "+brl(S.servico.preco), S.dia?DW[S.dia.getDay()]+" "+ddmm(S.dia):"", S.hora!=null?toHH(S.hora):""].filter(Boolean).join(" · ") : "";
+  if(!ok){ cta.setAttribute("aria-disabled","true"); cta.removeAttribute("href"); cta.textContent = !S.servico?"Escolha um serviço":!S.dia?"Escolha o dia":S.hora==null?"Escolha o horário":"Digite seu nome"; return; }
+  const linhas = [
+    "Olá! Quero agendar na "+CONFIG.nome+":",
+    "• Serviço: "+S.servico.nome+" ("+brl(S.servico.preco)+")",
+    CONFIG.profissionais.length>1 ? "• Profissional: "+(S.pro||"Qualquer um") : null,
+    "• Dia: "+DWL[S.dia.getDay()]+", "+ddmm(S.dia),
+    "• Horário: "+toHH(S.hora),
+    "Nome: "+nome
+  ].filter(Boolean);
+  cta.href = "https://wa.me/"+CONFIG.whatsapp+"?text="+encodeURIComponent(linhas.join("\n"));
+  cta.removeAttribute("aria-disabled"); cta.textContent = "Agendar pelo WhatsApp";
+}
+
+$("nome").textContent = CONFIG.nome; $("slogan").textContent = CONFIG.slogan; $("endereco").textContent = CONFIG.endereco;
+document.title = CONFIG.nome + " · Agendamento";
+$("cliente").addEventListener("input", atualizaCta);
+bloqueios = CONFIG.bloqueios.map(normaliza);
+render();
+
+if(CONFIG.planilhaCsv){
+  fetch(CONFIG.planilhaCsv, {cache:"no-store"}).then(r=>r.ok?r.text():Promise.reject())
+    .then(t=>{ bloqueios = parseCsv(t).map(normaliza); render(); })
+    .catch(()=>{});
+}
+</script>
+</body>
+</html>
